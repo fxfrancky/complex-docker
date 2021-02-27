@@ -1,0 +1,65 @@
+version: '3'
+services:
+  postgres:
+     image: 'postgres:latest'
+     environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+  
+  redis:
+    image: 'redis:latest'
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
+
+  api:
+    build:
+      #use the Dockerfile.dev is the server folder
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      #Never  override the folder node_modules (never redirect it)
+      - /app/node_modules
+      # If a file in /server changes, the changes will be apply 
+      # to the folder /app in the container
+      - ./server:/app
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      #Default port for redis (6379)
+      - REDIS_PORT=${REDIS_PORT}
+
+      - PGUSER=${PGUSER}
+      - PGHOST=${PGHOST}
+      - PGDATABASE=${PGDATABASE}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGPORT=${PGPORT}
+      
+
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+        #Never  override the folder node_modules (never redirect it)
+      - /app/node_modules
+      # If a file in /client changes, the changes will be apply 
+      # to the folder /app in the container
+      - ./client:/app
+  
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      #Never  override the folder node_modules (never redirect it)
+      - /app/node_modules
+      # If a file in /worker changes, the changes will be apply 
+      # to the folder /app in the container
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
