@@ -1,0 +1,32 @@
+sudo: required
+# Specify docker as a dependency
+services:
+  - docker
+
+#Build test version of React project
+before_install:
+  - docker build -t fxfrancky/react-test -f ./client/Dockerfile.dev ./client
+
+#Run tests
+script:
+  - docker run -e CI=true fxfrancky/react-test npm test -- --coverage
+
+#Build prod versions of all projects
+after_success:
+  - docker build -t fxfrancky/multi-client ./client
+  - docker build -t fxfrancky/multi-server ./server
+  - docker build -t fxfrancky/multi-nginx  ./nginx
+  - docker build -t fxfrancky/multi-worker ./worker
+
+#Login into docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+#Push all to docker hub
+  - docker push fxfrancky/multi-client
+  - docker push fxfrancky/multi-nginx
+  - docker push fxfrancky/multi-server
+  - docker push fxfrancky/multi-worker
+  
+
+
+#Tell Elastic Beanstalk to update
