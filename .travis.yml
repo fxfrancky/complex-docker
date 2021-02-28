@@ -30,3 +30,16 @@ after_success:
 
 
 #Tell Elastic Beanstalk to update
+
+# Configure travis deployment to AWS for production
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2" 
+  app: "multi-docker"
+  env: "Multidocker-env"
+  bucket_name: "elasticbeanstalk-us-east-2-143321073872"
+  bucket_path: "multi-docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
