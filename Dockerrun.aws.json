@@ -2,28 +2,30 @@
 "AWSEBDockerrunVersion":2,
 "containerDefinitions": [
     {
-        "memoryReservation" : 256,
         "name": "client",
         "image": "fxfrancky/multi-client",
         "hostname": "client",
-        "essential": false
+        "essential": false,
+        "memory": 128
     },
     {
-        "memoryReservation" : 256,
+       
         "name": "server",
         "image": "fxfrancky/multi-server",
         "hostname": "api",
-        "essential": false
+        "essential": false,
+        "memory": 128
     },
     {
-        "memoryReservation" : 256,
+        
         "name": "worker",
         "image": "fxfrancky/multi-worker",
         "hostname": "worker",
-        "essential": false
+        "essential": false,
+        "memory": 128
     },
     {
-        "memoryReservation" : 256,
+       
         "name": "nginx",
         "image":"fxfrancky/multi-nginx",
         "hostname":"nginx",
@@ -35,7 +37,8 @@
             }
 
         ],
-        "links": ["client","server"]
+        "links": ["client","server"],
+        "memory": 128
     }
 ]
 
